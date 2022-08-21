@@ -9,8 +9,12 @@ import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
-    private lateinit var binding: FragmentMainBinding
+
+
+
     private lateinit var adapter: MainAsteroidAdapter
+
+    private lateinit var binding: FragmentMainBinding
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
