@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="asteroid"
+            type="com.udacity.asteroidradar.Asteroid" />
+
+        <variable
+            name="clickListener"
+            type="com.udacity.asteroidradar.main.MainAsteroidAdapter.AsteroidListener" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/small_margin"
+        android:background="@color/app_background"
+        android:onClick="@{() -> clickListener.onClick(asteroid)}"
+        >
+
+    <TextView
+        android:id="@+id/name_list_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{asteroid.codename}"
+        android:textColor="@color/default_text_color"
+        tools:text="34347 (3456 KH47"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/date_list_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{asteroid.closeApproachDate}"
+        android:textColor="@color/default_text_color"
+        tools:text="2022-08-08"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_list_item"
+         />
+
+    <ImageView
+        android:id="@+id/isHazardous_list_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:src="@drawable/ic_status_potentially_hazardous"
+        statusIcon="@{asteroid.potentiallyHazardous}"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
