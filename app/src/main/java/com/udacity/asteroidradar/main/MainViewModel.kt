@@ -64,7 +64,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     private suspend fun refreshPictureOfDay() {
         _pictureOfDay.value = getPictureOfDay()!!
     }
-
+// get for 7days asteroids
     fun viewWeekAsteroidsClicked() {
         viewModelScope.launch {
             database.asteroidDao.
@@ -74,6 +74,30 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
                 }
         }
     }
+
+    // get today asteroids
+    fun viewTodayAsteroidsClicked() {
+        viewModelScope.launch {
+            database.asteroidDao.
+            getAsteroidsByCloseApproachDate(getToday(), getToday())
+                .collect { asteroids ->
+                    _asteroids.value = asteroids
+                }
+        }
+    }
+
+
+    //get all asteroid
+    fun viewAllAsteroidsClicked() {
+        viewModelScope.launch {
+            database.asteroidDao.
+            getAllAsteroids()
+                .collect { asteroids ->
+                    _asteroids.value = asteroids
+                }
+        }
+    }
+
 
 
 

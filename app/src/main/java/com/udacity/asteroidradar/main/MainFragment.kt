@@ -63,6 +63,35 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return true
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.show_week_asteroid_menu -> {
+                showOneWeekAsteroid()
+                true
+            }
+            R.id.show_today_asteroid_menu -> {
+                showTodayAsteroid()
+                true
+            }
+            R.id.show_saved_asteroid_menu -> {
+                showAllAsteroid()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
+            private fun showOneWeekAsteroid() {
+                viewModel.viewWeekAsteroidsClicked()
+            }
+
+
+            private fun showTodayAsteroid() {
+                viewModel.viewTodayAsteroidsClicked()
+            }
+
+            private fun showAllAsteroid() {
+                viewModel.viewAllAsteroidsClicked()
+            }
+
 }
