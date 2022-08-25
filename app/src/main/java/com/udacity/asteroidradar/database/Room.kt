@@ -15,11 +15,9 @@ interface AsteroidDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg asteroids: DatabaseAsteroid)
 
-    //get asteroid for 7  days and for today
+    //get asteroid for 7  days
     @Query("SELECT * FROM databaseAsteroid WHERE closeApproachDate >= :startDate AND closeApproachDate <= :endDate ORDER BY closeApproachDate ASC")
     fun getAsteroidsByCloseApproachDate(startDate: String, endDate: String): Flow<List<Asteroid>>
-
-
 
 }
 //get instance from dataBase
