@@ -65,7 +65,6 @@ class MainFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
-//        return when (item.itemId) {
         viewModel.onMenuClicked(item.title.toString())
         viewModel.selectedItem.observe(viewLifecycleOwner) { asteroids ->
             if (asteroids != null) {

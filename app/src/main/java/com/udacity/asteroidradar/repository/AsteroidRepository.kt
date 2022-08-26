@@ -30,10 +30,4 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
 
         }
     }
-
-    suspend fun deletePreviousDayAsteroids() {
-        withContext(Dispatchers.IO) {
-            database.asteroidDao.deletePreviousDayAsteroids(getToday())
-        }
-    }
 }
