@@ -30,6 +30,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     val navigateToDetailFragment: LiveData<Asteroid>
         get() = _navigateToDetailFragment
 
+    private val _itemSelected = MutableLiveData<String>()
 
 
     init {
@@ -65,11 +66,11 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     private suspend fun refreshPictureOfDay() {
         _pictureOfDay.value = getPictureOfDay()!!
     }
-// get for 7days asteroids
+
+    // get for 7days asteroids
     fun viewWeekAsteroidsClicked() {
         viewModelScope.launch {
-            database.asteroidDao.
-            getAsteroidsByCloseApproachDate(getToday(), getSeventhDay())
+            database.asteroidDao.getAsteroidsByCloseApproachDate(getToday(), getSeventhDay())
                 .collect { asteroids ->
                     _asteroids.value = asteroids
                 }
