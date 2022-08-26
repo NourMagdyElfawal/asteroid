@@ -5,6 +5,7 @@ package com.udacity.asteroidradar.repository
 import android.util.Log
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.BuildConfig
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.*
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,8 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 
 class AsteroidRepository(private val database: AsteroidDatabase) {
+//    val nasaApiKey = BuildConfig.NASA_API_KEY
+
     suspend fun refreshAsteroidFromRepository(
         startDate: String = getToday(),
         endDate: String = getSeventhDay()

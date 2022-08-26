@@ -69,42 +69,11 @@ class MainFragment : Fragment() {
 
         }
 
-        viewModel.navigateToDetailFragment.observe(viewLifecycleOwner) { asteroid ->
-            if (asteroid != null) {
-                findNavController().navigate(MainFragmentDirections.actionShowDetail(asteroid))
-                //to make back
-                viewModel.doneNavigating()
-            }
-        }
+
 
 
         Log.e("title1", item.title.toString())
         return true
-//            R.id.show_week_asteroid_menu -> {
-//                showOneWeekAsteroid()
-//                true
-//            }
-//            R.id.show_today_asteroid_menu -> {
-//                showTodayAsteroid()
-//                true
-//            }
-//            R.id.show_saved_asteroid_menu -> {
-//                showAllAsteroid()
-//                true
-//            }
 
     }
-//            private fun showOneWeekAsteroid() {
-//                viewModel.viewWeekAsteroidsClicked()
-//            }
-//
-//
-//            private fun showTodayAsteroid() {
-//                viewModel.viewTodayAsteroidsClicked()
-//            }
-//
-//            private fun showAllAsteroid() {
-//                viewModel.viewAllAsteroidsClicked()
-//            }
-
 }
