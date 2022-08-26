@@ -18,14 +18,15 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
         endDate: String = getSeventhDay()
     ) {
         var asteroidList: ArrayList<Asteroid>
+//      you have to run the disk I/O in the I/O dispatcher.
+//      This dispatcher is designed to offload blocking I/O tasks to a shared pool of threads using
         withContext(Dispatchers.IO) {
-            val asteroidResponseBody: ResponseBody = Network.service.getAsteroidsAsync(
-                startDate, endDate,
-                Constants.API_KEY
-            ).await()
+                val asteroidResponseBody: ResponseBody = Network.service.getAsteroidsAsync(
+                    startDate, endDate,
+                    Constants.API_KEY
+                ).await()
                 asteroidList = parseAsteroidsJsonResult(JSONObject(asteroidResponseBody.string()))
                 database.asteroidDao.insertAll(*asteroidList.asDomainModel())
-
 
         }
     }
