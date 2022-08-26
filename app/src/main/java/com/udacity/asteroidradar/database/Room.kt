@@ -20,6 +20,8 @@ interface AsteroidDao {
     fun getAsteroidsByCloseApproachDate(startDate: String, endDate: String): Flow<List<Asteroid>>
 
 
+    @Query("DELETE FROM databaseAsteroid WHERE closeApproachDate < :today")
+    fun deletePreviousDayAsteroids(today: String): Int
 
 }
 //get instance from dataBase

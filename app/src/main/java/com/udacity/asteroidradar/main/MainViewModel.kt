@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
@@ -71,6 +72,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
             getAsteroidsByCloseApproachDate(getToday(), getSeventhDay())
                 .collect { asteroids ->
                     _asteroids.value = asteroids
+                    Log.e("asteroid", asteroids.size.toString())
                 }
         }
     }
