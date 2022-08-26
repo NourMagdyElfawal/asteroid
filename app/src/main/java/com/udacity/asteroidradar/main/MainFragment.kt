@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -59,6 +60,51 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        viewModel.onMenuClicked(item.title.toString())
+        viewModel.selectedItem.observe(viewLifecycleOwner) { asteroids ->
+            if (asteroids != null) {
+                adapter.submitList(asteroids)
+            }
+
+        }
+
+        viewModel.navigateToDetailFragment.observe(viewLifecycleOwner) { asteroid ->
+            if (asteroid != null) {
+                findNavController().navigate(MainFragmentDirections.actionShowDetail(asteroid))
+                //to make back
+                viewModel.doneNavigating()
+            }
+        }
+
+
+        Log.e("title1", item.title.toString())
         return true
+//            R.id.show_week_asteroid_menu -> {
+//                showOneWeekAsteroid()
+//                true
+//            }
+//            R.id.show_today_asteroid_menu -> {
+//                showTodayAsteroid()
+//                true
+//            }
+//            R.id.show_saved_asteroid_menu -> {
+//                showAllAsteroid()
+//                true
+//            }
+
     }
+//            private fun showOneWeekAsteroid() {
+//                viewModel.viewWeekAsteroidsClicked()
+//            }
+//
+//
+//            private fun showTodayAsteroid() {
+//                viewModel.viewTodayAsteroidsClicked()
+//            }
+//
+//            private fun showAllAsteroid() {
+//                viewModel.viewAllAsteroidsClicked()
+//            }
+
 }

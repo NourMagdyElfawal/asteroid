@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.api
 
+import android.util.Log
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
@@ -12,13 +13,14 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
+
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
 
     val asteroidList = ArrayList<Asteroid>()
 
     val nextSevenDaysFormattedDates = getNextSevenDaysFormattedDates()
     for (formattedDate in nextSevenDaysFormattedDates) {
-        if (nearEarthObjectsJson.has(formattedDate)) {
+        if (nearEarthObjectsJson.optJSONArray(formattedDate) != null) {
             val dateAsteroidJsonArray = nearEarthObjectsJson.getJSONArray(formattedDate)
 
             for (i in 0 until dateAsteroidJsonArray.length()) {
@@ -38,8 +40,10 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
                 val isPotentiallyHazardous = asteroidJson
                     .getBoolean("is_potentially_hazardous_asteroid")
 
-                val asteroid = Asteroid(id, codename, formattedDate, absoluteMagnitude,
-                    estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous)
+                val asteroid = Asteroid(
+                    id, codename, formattedDate, absoluteMagnitude,
+                    estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous
+                )
                 asteroidList.add(asteroid)
             }
         }
@@ -53,9 +57,7 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
 
     val calendar = Calendar.getInstance()
     for (i in 0..Constants.DEFAULT_END_DATE_DAYS) {
-        val currentTime = calendar.time
-        val dateFormat = SimpleDateFormat("EEE, MMM d, ''yy", Locale.getDefault())
-        formattedDateList.add(dateFormat.format(currentTime))
+        formattedDateList.add(formatDate(calendar.time))
         calendar.add(Calendar.DAY_OF_YEAR, 1)
     }
 
@@ -74,7 +76,7 @@ fun getSeventhDay(): String {
 }
 
 private fun formatDate(date: Date): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
     return dateFormat.format(date)
 }
 
@@ -99,8 +101,7 @@ suspend fun getPictureOfDay(): PictureOfDay? {
     withContext(Dispatchers.IO) {
         pictureOfDay = Network.service.getPictureOfDayAsync().await()
     }
-    if (pictureOfDay.mediaType == "image"
-    ) {
+    if (pictureOfDay.mediaType == "image") {
         return pictureOfDay
     }
     return null

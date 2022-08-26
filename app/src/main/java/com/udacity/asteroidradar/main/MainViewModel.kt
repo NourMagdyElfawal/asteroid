@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel (application: Application): AndroidViewModel(application) {
 
-    private val database=AsteroidDatabase.getDatabase(application)
+    private val database = AsteroidDatabase.getDatabase(application)
     private val asteroidRepository = AsteroidRepository(database)
 
 
@@ -65,7 +65,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     private suspend fun refreshPictureOfDay() {
         _pictureOfDay.value = getPictureOfDay()!!
     }
-
+// get for 7days asteroids
     fun viewWeekAsteroidsClicked() {
         viewModelScope.launch {
             database.asteroidDao.
@@ -77,5 +77,53 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     }
 
 
+
+    //get all saved asteroid
+    fun viewAllAsteroidsClicked() {
+//        val asteroids: LiveData<List<Asteroid>> =
+//            Transformations.switchMap(
+//                database.asteroidDao.getAllAsteroids()
+//            )
+//            {
+//                asteroids
+//            }
+        viewModelScope.launch {
+            database.asteroidDao.getAllAsteroids()
+                .collect { asteroids ->
+                    _asteroids.value = asteroids
+                }
+        }
+    }
+
+    fun onMenuClicked(title: String) {
+        _itemSelected.value = title
+    }
+
+    val selectedItem: LiveData<List<Asteroid>> =
+        Transformations.switchMap(_itemSelected) {
+        getAsteroidList(it)
+    }
+
+    private fun getAsteroidList(it: String?): LiveData<List<Asteroid>> {
+        Log.e("title2", it!!)
+        if (it.equals("View week asteroids", true)) {
+            viewWeekAsteroidsClicked()
+        } else if (it.equals("View today asteroids", true)){
+            viewTodayAsteroidsClicked()
+        } else if (it.equals("View saved asteroids", true)){
+            viewAllAsteroidsClicked()
+        }
+
+        return asteroids
+    }
+    // get today asteroids
+    fun viewTodayAsteroidsClicked() {
+        viewModelScope.launch {
+            database.asteroidDao.getAsteroidsByCloseApproachDate(getToday(), getToday())
+                .collect { asteroids ->
+                    _asteroids.value = asteroids
+                }
+        }
+    }
 
 }

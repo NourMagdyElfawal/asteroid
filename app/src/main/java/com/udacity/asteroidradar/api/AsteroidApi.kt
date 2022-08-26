@@ -4,6 +4,8 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.Constants.API_KEY
+import com.udacity.asteroidradar.Constants.BASE_URL
 import com.udacity.asteroidradar.PictureOfDay
 import kotlinx.coroutines.Deferred
 import okhttp3.ResponseBody
@@ -13,9 +15,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-private const val BASE_URL = "https://api.nasa.gov/"
-private const val IMAGE_URL = "https://api.nasa.gov/planetary/apod?"
-private const val API_KEY = "UCL9UE5XmAWhgKNAJjPDnmv1kjehohEM3FE1SyCS"
 
 
 
