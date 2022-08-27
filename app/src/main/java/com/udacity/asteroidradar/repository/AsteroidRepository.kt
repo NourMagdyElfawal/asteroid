@@ -14,7 +14,6 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 
 class AsteroidRepository(private val database: AsteroidDatabase) {
-//    val nasaApiKey = BuildConfig.NASA_API_KEY
 
     suspend fun refreshAsteroidFromRepository(
         startDate: String = getToday(),
@@ -24,12 +23,15 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
 //      you have to run the disk I/O in the I/O dispatcher.
 //      This dispatcher is designed to offload blocking I/O tasks to a shared pool of threads using
         withContext(Dispatchers.IO) {
-                val asteroidResponseBody: ResponseBody = Network.service.getAsteroidsAsync(
-                    startDate, endDate,
-                    Constants.API_KEY
-                ).await()
+            try {
+                val asteroidResponseBody: ResponseBody = AsteroidApi.retrofitService.getAsteroids(
+                    startDate, endDate
+                )
                 asteroidList = parseAsteroidsJsonResult(JSONObject(asteroidResponseBody.string()))
                 database.asteroidDao.insertAll(*asteroidList.asDomainModel())
+            }catch (e:Exception){
+            println("Exception refreshing Asteroids: $e.message")
+        }
 
         }
     }

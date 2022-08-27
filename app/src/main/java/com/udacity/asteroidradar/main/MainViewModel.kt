@@ -5,12 +5,14 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.api.getPictureOfDay
+import com.udacity.asteroidradar.api.AsteroidApi
 import com.udacity.asteroidradar.api.getSeventhDay
 import com.udacity.asteroidradar.api.getToday
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.repository.AsteroidRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel (application: Application): AndroidViewModel(application) {
 
@@ -21,6 +23,14 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     private var _asteroids = MutableLiveData<List<Asteroid>>()
     val asteroids: LiveData<List<Asteroid>>
         get() = _asteroids
+
+
+//    // The internal MutableLiveData that stores the status of the most recent request
+//    private val _status = MutableLiveData<String>()
+//
+//    // The external immutable LiveData for the request status
+//    val status: LiveData<String> = _status
+
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay>
@@ -35,6 +45,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
 
     init {
         viewWeekAsteroidsClicked()
+        getPictureOfDay()
         viewModelScope.launch {
             try {
                 asteroidRepository.refreshAsteroidFromRepository()
@@ -42,15 +53,6 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
                 println("Exception refreshing data: $e.message")
             }
         }
-
-        viewModelScope.launch {
-            try {
-                refreshPictureOfDay()
-            } catch (e: Exception) {
-                println("Exception refreshing data: $e.message")
-            }
-        }
-
 
     }
 
@@ -63,8 +65,21 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     }
 
 
-    private suspend fun refreshPictureOfDay() {
-        _pictureOfDay.value = getPictureOfDay()!!
+
+    private fun getPictureOfDay() {
+        viewModelScope.launch {
+        try {
+            val pictureOfDay = AsteroidApi.retrofitService.getPhoto()
+            println( "Success: get  photo retrieved")
+            if (pictureOfDay.mediaType == "image") {
+                 _pictureOfDay.value=pictureOfDay
+            }else{
+                _pictureOfDay.value=null
+            }
+        }catch (e:Exception){
+            println("Exception refreshing image: $e.message")
+        }
+    }
     }
 
     // get for 7days asteroids
@@ -81,13 +96,6 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
 
     //get all saved asteroid
     fun viewAllAsteroidsClicked() {
-//        val asteroids: LiveData<List<Asteroid>> =
-//            Transformations.switchMap(
-//                database.asteroidDao.getAllAsteroids()
-//            )
-//            {
-//                asteroids
-//            }
         viewModelScope.launch {
             database.asteroidDao.getAllAsteroids()
                 .collect { asteroids ->
