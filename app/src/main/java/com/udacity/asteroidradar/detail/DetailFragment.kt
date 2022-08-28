@@ -23,7 +23,7 @@ class DetailFragment : Fragment() {
         binding.helpButton.setOnClickListener {
             displayAstronomicalUnitExplanationDialog()
         }
-
+        binding.helpButton.contentDescription="this is help"
         return binding.root
     }
 
