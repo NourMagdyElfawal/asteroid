@@ -71,7 +71,7 @@ fun getTodayDate(): String {
 
 fun getAfterSevenDayDate(): String {
     val calendar = Calendar.getInstance()
-    calendar.add(Calendar.DAY_OF_YEAR, 7)
+    calendar.add(Calendar.DAY_OF_YEAR, Constants.DEFAULT_END_DATE_DAYS)
     val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
     val afterSevenDayDate=dateFormat.format(calendar.time)
     return afterSevenDayDate

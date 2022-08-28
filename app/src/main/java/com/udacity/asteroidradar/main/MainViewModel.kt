@@ -71,7 +71,6 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
         viewModelScope.launch {
         try {
             val pictureOfDay = AsteroidApi.retrofitService.getPhoto()
-            println( "Success: get  photo retrieved")
             if (pictureOfDay.mediaType == "image") {
                  _pictureOfDay.value=pictureOfDay
             }else{
@@ -98,8 +97,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     //get all saved asteroid
     fun viewAllAsteroidsClicked() {
         viewModelScope.launch {
-            database.asteroidDao.getAllAsteroids()
-                .collect {
+            database.asteroidDao.getAllAsteroids().collect {
                     _asteroidList.value = it
                 }
         }
@@ -115,7 +113,6 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     }
 
     private fun getAsteroidList(it: String?): LiveData<List<Asteroid>> {
-        Log.e("title2", it!!)
         if (it.equals("View week asteroids", true)) {
             viewWeekAsteroidsClicked()
         } else if (it.equals("View today asteroids", true)){

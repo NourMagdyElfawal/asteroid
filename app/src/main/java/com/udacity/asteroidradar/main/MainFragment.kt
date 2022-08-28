@@ -3,6 +3,7 @@ package com.udacity.asteroidradar.main
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -27,7 +28,6 @@ class MainFragment : Fragment() {
 
         //connect the recycler with the adapter and add clickListener
         adapter = MainAsteroidAdapter(MainAsteroidAdapter.AsteroidListener {
-
             viewModel.selectItem(it)
         })
         binding.asteroidRecycler.adapter = adapter
@@ -48,6 +48,8 @@ class MainFragment : Fragment() {
             if (it != null) {
                 findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
                 viewModel.removeNav()
+            }else{
+                Toast.makeText(activity?.applicationContext, "Error In Asteroid Data", Toast.LENGTH_LONG).show()
             }
         }
 
