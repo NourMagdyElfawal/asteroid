@@ -58,7 +58,7 @@ fun bindPictureOfDay(imageView: ImageView, pictureOfDay: PictureOfDay?) {
             .fit()
             .centerCrop()
             .into(imageView)
-        imageView.contentDescription = imageView.context.getString(R.string.picture_of_day_content)
+        imageView.contentDescription = pictureOfDay.title
     } else {
         imageView.setImageResource(R.drawable.img)
         imageView.contentDescription =imageView.context.getString(R.string.this_is_nasa_s_picture_of_day_showing_nothing_yet)
