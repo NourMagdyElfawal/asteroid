@@ -5,13 +5,14 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
-    private lateinit var binding: FragmentMainBinding
     private lateinit var adapter: MainAsteroidAdapter
+    private lateinit var binding: FragmentMainBinding
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -23,32 +24,30 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
-        //connect the recycler with the adapter and add clickListener
-        adapter = MainAsteroidAdapter(MainAsteroidAdapter.AsteroidListener { asteroid ->
 
-            viewModel.onAsteroidClicked(asteroid)
+        //connect the recycler with the adapter and add clickListener
+        adapter = MainAsteroidAdapter(MainAsteroidAdapter.AsteroidListener {
+
+            viewModel.selectItem(it)
         })
         binding.asteroidRecycler.adapter = adapter
-        setupObservers()
-
+//        submitList of asteroid List at adapter
+        viewModel.asteroidList.observe(viewLifecycleOwner) {
+            if (it != null) {
+                adapter.submitList(it)
+            }
+        }
+        onItemClicked()
         setHasOptionsMenu(true)
 
         return binding.root
     }
 
-    private fun setupObservers() {
-        viewModel.asteroids.observe(viewLifecycleOwner) { asteroids ->
-            if (asteroids != null) {
-                adapter.submitList(asteroids)
-            }
-
-        }
-
-        viewModel.navigateToDetailFragment.observe(viewLifecycleOwner) { asteroid ->
-            if (asteroid != null) {
-                findNavController().navigate(MainFragmentDirections.actionShowDetail(asteroid))
-                //to make back
-                viewModel.doneNavigating()
+    private fun onItemClicked() {
+        viewModel.selectedItem.observe(viewLifecycleOwner) {
+            if (it != null) {
+                findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
+                viewModel.removeNav()
             }
         }
 
@@ -62,16 +61,12 @@ class MainFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         viewModel.onMenuClicked(item.title.toString())
-        viewModel.selectedItem.observe(viewLifecycleOwner) { asteroids ->
+        viewModel.menuSelectedItem.observe(viewLifecycleOwner) { asteroids ->
             if (asteroids != null) {
                 adapter.submitList(asteroids)
             }
 
         }
-
-
-
-
         Log.e("title1", item.title.toString())
         return true
 

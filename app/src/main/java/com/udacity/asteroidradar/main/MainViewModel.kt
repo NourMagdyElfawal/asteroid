@@ -1,13 +1,12 @@
 package com.udacity.asteroidradar.main
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.api.AsteroidApi
-import com.udacity.asteroidradar.api.getSeventhDay
-import com.udacity.asteroidradar.api.getToday
+import com.udacity.asteroidradar.api.*
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.repository.AsteroidRepository
 import kotlinx.coroutines.Dispatchers
@@ -18,29 +17,36 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
 
     private val database = AsteroidDatabase.getDatabase(application)
     private val asteroidRepository = AsteroidRepository(database)
+    private val todayDate= getTodayDate()
+    private val afterSevenDayDate= getAfterSevenDayDate()
 
 
-    private var _asteroids = MutableLiveData<List<Asteroid>>()
-    val asteroids: LiveData<List<Asteroid>>
-        get() = _asteroids
-
-
-//    // The internal MutableLiveData that stores the status of the most recent request
-//    private val _status = MutableLiveData<String>()
-//
-//    // The external immutable LiveData for the request status
-//    val status: LiveData<String> = _status
+    private var _asteroidList = MutableLiveData<List<Asteroid>>()
+    val asteroidList: LiveData<List<Asteroid>>
+        get() = _asteroidList
 
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay>
         get() = _pictureOfDay
+//this is for menu
+    private val _menuItemSelected = MutableLiveData<String>()
 
-    private val _navigateToDetailFragment = MutableLiveData<Asteroid>()
-    val navigateToDetailFragment: LiveData<Asteroid>
-        get() = _navigateToDetailFragment
+//select asteroid from the list
+    private val _mutableSelectedItem = MutableLiveData<Asteroid>()
+    val selectedItem: LiveData<Asteroid>
+    get() = _mutableSelectedItem
 
-    private val _itemSelected = MutableLiveData<String>()
+    fun selectItem(asteroid: Asteroid) {
+        _mutableSelectedItem.value = asteroid
+    }
+
+    @SuppressLint("NullSafeMutableLiveData")
+    fun removeNav() {
+        _mutableSelectedItem.postValue(null)
+    }
+
+/////////////////////////////////////
 
 
     init {
@@ -56,16 +62,11 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
 
     }
 
-    fun onAsteroidClicked(asteroid: Asteroid) {
-        _navigateToDetailFragment.value = asteroid
-    }
-
-    fun doneNavigating() {
-        _navigateToDetailFragment.value = null
-    }
 
 
 
+
+    @SuppressLint("NullSafeMutableLiveData")
     private fun getPictureOfDay() {
         viewModelScope.launch {
         try {
@@ -74,7 +75,7 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
             if (pictureOfDay.mediaType == "image") {
                  _pictureOfDay.value=pictureOfDay
             }else{
-                _pictureOfDay.value=null
+                _pictureOfDay.postValue(null)
             }
         }catch (e:Exception){
             println("Exception refreshing image: $e.message")
@@ -85,9 +86,9 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     // get for 7days asteroids
     fun viewWeekAsteroidsClicked() {
         viewModelScope.launch {
-            database.asteroidDao.getAsteroidsByCloseApproachDate(getToday(), getSeventhDay())
-                .collect { asteroids ->
-                    _asteroids.value = asteroids
+            database.asteroidDao.getAsteroidsByDate(todayDate, afterSevenDayDate)
+                .collect {
+                    _asteroidList.value = it
                 }
         }
     }
@@ -98,18 +99,18 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
     fun viewAllAsteroidsClicked() {
         viewModelScope.launch {
             database.asteroidDao.getAllAsteroids()
-                .collect { asteroids ->
-                    _asteroids.value = asteroids
+                .collect {
+                    _asteroidList.value = it
                 }
         }
     }
 
     fun onMenuClicked(title: String) {
-        _itemSelected.value = title
+        _menuItemSelected.value = title
     }
 
-    val selectedItem: LiveData<List<Asteroid>> =
-        Transformations.switchMap(_itemSelected) {
+    val menuSelectedItem: LiveData<List<Asteroid>> =
+        Transformations.switchMap(_menuItemSelected) {
         getAsteroidList(it)
     }
 
@@ -123,14 +124,14 @@ class MainViewModel (application: Application): AndroidViewModel(application) {
             viewAllAsteroidsClicked()
         }
 
-        return asteroids
+        return asteroidList
     }
     // get today asteroids
     fun viewTodayAsteroidsClicked() {
         viewModelScope.launch {
-            database.asteroidDao.getAsteroidsByCloseApproachDate(getToday(), getToday())
-                .collect { asteroids ->
-                    _asteroids.value = asteroids
+            database.asteroidDao.getAsteroidsByDate(todayDate, todayDate)
+                .collect {
+                    _asteroidList.value = it
                 }
         }
     }

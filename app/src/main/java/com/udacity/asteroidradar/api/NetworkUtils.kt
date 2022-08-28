@@ -1,16 +1,14 @@
 package com.udacity.asteroidradar.api
 
-import android.util.Log
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
-import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.DatabaseAsteroid
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
+
 
 fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
 
@@ -64,34 +62,39 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     return formattedDateList
 }
 
-fun getToday(): String {
+fun getTodayDate(): String {
     val calendar = Calendar.getInstance()
-    return formatDate(calendar.time)
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+    val todayDate=dateFormat.format(calendar.time)
+    return todayDate
 }
 
-fun getSeventhDay(): String {
+fun getAfterSevenDayDate(): String {
     val calendar = Calendar.getInstance()
     calendar.add(Calendar.DAY_OF_YEAR, 7)
-    return formatDate(calendar.time)
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+    val afterSevenDayDate=dateFormat.format(calendar.time)
+    return afterSevenDayDate
 }
 
 private fun formatDate(date: Date): String {
     val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
     return dateFormat.format(date)
 }
-
+//convert ArrayList to Array of AsteroidModel
 fun ArrayList<Asteroid>.asDomainModel(): Array<DatabaseAsteroid> {
-    return map {
+    val asteroidArray= map {asteroid->
         DatabaseAsteroid(
-            id = it.id,
-            codename = it.codename,
-            closeApproachDate = it.closeApproachDate,
-            absoluteMagnitude = it.absoluteMagnitude,
-            estimatedDiameter = it.estimatedDiameter,
-            relativeVelocity = it.relativeVelocity,
-            distanceFromEarth = it.distanceFromEarth,
-            isPotentiallyHazardous = it.isPotentiallyHazardous
+            id = asteroid.id,
+            codename = asteroid.codename,
+            closeApproachDate = asteroid.closeApproachDate,
+            absoluteMagnitude = asteroid.absoluteMagnitude,
+            estimatedDiameter = asteroid.estimatedDiameter,
+            relativeVelocity = asteroid.relativeVelocity,
+            distanceFromEarth = asteroid.distanceFromEarth,
+            isPotentiallyHazardous = asteroid.isPotentiallyHazardous
         )
     }
         .toTypedArray()
+    return asteroidArray
 }

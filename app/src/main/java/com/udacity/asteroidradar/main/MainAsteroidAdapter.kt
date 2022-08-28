@@ -12,22 +12,19 @@ class MainAsteroidAdapter(private val clickListener: AsteroidListener) :
     ListAdapter<Asteroid, RecyclerView.ViewHolder>(AsteroidDiffCallback()) {
 
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
-    }
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val asteroidItem = getItem(position)
         holder as ViewHolder
         holder.bind(asteroidItem, clickListener)
     }
+
+
     class ViewHolder private constructor(private val binding: AsteroidItemViewBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Asteroid, clickListener: AsteroidListener) {
-            binding.asteroid = item
             binding.clickListener = clickListener
+            binding.asteroid = item
             binding.executePendingBindings()
         }
 
@@ -48,6 +45,9 @@ class MainAsteroidAdapter(private val clickListener: AsteroidListener) :
         override fun areContentsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
             return oldItem == newItem
         }
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.from(parent)
     }
 
     class AsteroidListener(val clickListener: (asteroid: Asteroid) -> Unit) {

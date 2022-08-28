@@ -2,7 +2,6 @@
 
 package com.udacity.asteroidradar.repository
 
-import android.util.Log
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.BuildConfig
@@ -16,8 +15,8 @@ import org.json.JSONObject
 class AsteroidRepository(private val database: AsteroidDatabase) {
 
     suspend fun refreshAsteroidFromRepository(
-        startDate: String = getToday(),
-        endDate: String = getSeventhDay()
+        todayDate: String = getTodayDate(),
+        afterSevenDayDate: String = getAfterSevenDayDate()
     ) {
         var asteroidList: ArrayList<Asteroid>
 //      you have to run the disk I/O in the I/O dispatcher.
@@ -25,10 +24,11 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
         withContext(Dispatchers.IO) {
             try {
                 val asteroidResponseBody: ResponseBody = AsteroidApi.retrofitService.getAsteroids(
-                    startDate, endDate
+                    todayDate, afterSevenDayDate
                 )
                 asteroidList = parseAsteroidsJsonResult(JSONObject(asteroidResponseBody.string()))
-                database.asteroidDao.insertAll(*asteroidList.asDomainModel())
+                val asteroids=asteroidList.asDomainModel()
+                database.asteroidDao.insertAll(* asteroids  )
             }catch (e:Exception){
             println("Exception refreshing Asteroids: $e.message")
         }
